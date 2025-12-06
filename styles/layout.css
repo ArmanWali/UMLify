@@ -1,0 +1,168 @@
+/* ============================================
+   UMLify - Layout CSS
+   Three-panel responsive layout
+   ============================================ */
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding: 0 var(--space-4);
+    background-color: var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.header__logo {
+    color: var(--color-accent);
+}
+
+.header__title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+}
+
+.header__tabs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    background-color: var(--color-bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.tab {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.tab:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-secondary);
+}
+
+.tab--active {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Diagram type color accents */
+.tab[data-diagram="sequence"].tab--active {
+    border-bottom: 2px solid var(--color-sequence);
+}
+
+.tab[data-diagram="class"].tab--active {
+    border-bottom: 2px solid var(--color-class);
+}
+
+.tab[data-diagram="usecase"].tab--active {
+    border-bottom: 2px solid var(--color-usecase);
+}
+
+.tab[data-diagram="state"].tab--active {
+    border-bottom: 2px solid var(--color-state);
+}
+
+.tab[data-diagram="activity"].tab--active {
+    border-bottom: 2px solid var(--color-activity);
+}
+
+.tab[data-diagram="erd"].tab--active {
+    border-bottom: 2px solid var(--color-erd);
+}
+
+.tab[data-diagram="component"].tab--active {
+    border-bottom: 2px solid var(--color-component);
+}
+
+.tab[data-diagram="package"].tab--active {
+    border-bottom: 2px solid var(--color-package);
+}
+
+.header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.header__divider {
+    width: 1px;
+    height: 24px;
+    background-color: var(--color-border);
+    margin: 0 var(--space-2);
+}
+
+/* Main Content Area */
+.main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    background-color: var(--color-bg-secondary);
+}
+
+/* Status Bar */
+.statusbar {
+    display: flex;
+    align-items: center;
+    height: var(--statusbar-height);
+    padding: 0 var(--space-4);
+    background-color: var(--color-bg-primary);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.statusbar__item {
+    padding: 0 var(--space-3);
+    border-right: 1px solid var(--color-border-light);
+}
+
+.statusbar__item:first-child {
+    padding-left: 0;
+}
+
+.statusbar__item:last-child {
+    border-right: none;
+}
+
+.statusbar__spacer {
+    flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .header__tabs {
+        gap: 0;
+    }
+
+    .tab {
+        padding: var(--space-2);
+        font-size: var(--font-size-xs);
+    }
+}
+
+@media (max-width: 900px) {
+    .header__tabs {
+        display: none;
+    }
+
+    .properties {
+        display: none;
+    }
+}

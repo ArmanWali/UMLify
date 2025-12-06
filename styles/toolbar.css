@@ -1,0 +1,158 @@
+/* ============================================
+   UMLify - Toolbar CSS
+   Left sidebar with tools
+   ============================================ */
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    width: var(--toolbar-width);
+    background-color: var(--color-bg-primary);
+    border-right: 1px solid var(--color-border);
+    padding: var(--space-3);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.toolbar__section {
+    margin-bottom: var(--space-3);
+}
+
+.toolbar__title {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2);
+    padding: 0 var(--space-1);
+}
+
+.toolbar__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 100%;
+}
+
+.toolbar__divider {
+    height: 1px;
+    background-color: var(--color-border-light);
+    margin: var(--space-2) 0;
+}
+
+/* Tool Button */
+.tool {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: 36px;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+    position: relative;
+    cursor: grab;
+    user-select: none;
+}
+
+.tool:active {
+    cursor: grabbing;
+}
+
+.tool svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+}
+
+.tool__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tool:hover {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.tool--active {
+    background-color: var(--color-accent-light);
+    color: var(--color-accent);
+}
+
+.tool--active:hover {
+    background-color: var(--color-accent-light);
+    color: var(--color-accent-dark);
+}
+
+/* Tool with label (for expanded toolbar) */
+.tool--with-label {
+    justify-content: flex-start;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-3);
+}
+
+.tool__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Tool Tooltip */
+.tool[title]::after {
+    content: attr(title);
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--space-1) var(--space-2);
+    background-color: var(--color-text-primary);
+    color: var(--color-bg-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+    pointer-events: none;
+    z-index: var(--z-tooltip);
+}
+
+.tool[title]:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Connector tool icons with different styles */
+.tool--connector {
+    position: relative;
+}
+
+.tool--connector svg {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Shape tool icons */
+.tool--shape svg {
+    stroke-width: 1.5;
+}
+
+/* Dragging state */
+.tool.dragging {
+    opacity: 0.5;
+}
+
+/* Tool separator for grouping */
+.tool-separator {
+    height: 1px;
+    background-color: var(--color-border-light);
+    margin: var(--space-1) 0;
+}

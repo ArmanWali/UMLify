@@ -1,0 +1,290 @@
+/* ============================================
+   UMLify - Properties Panel CSS
+   Right sidebar with element properties
+   ============================================ */
+
+.properties {
+    display: flex;
+    flex-direction: column;
+    width: var(--properties-width);
+    background-color: var(--color-bg-primary);
+    border-left: 1px solid var(--color-border);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.properties--collapsed {
+    width: 0;
+    border-left: none;
+}
+
+.properties__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.properties__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.properties__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+/* Empty State */
+.properties__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    text-align: center;
+    color: var(--color-text-tertiary);
+}
+
+.properties__empty svg {
+    margin-bottom: var(--space-3);
+}
+
+.properties__empty p {
+    font-size: var(--font-size-sm);
+    max-width: 180px;
+}
+
+/* Properties Form */
+.properties__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+/* Form Elements */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.form-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+}
+
+.form-label--sm {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus {
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+.form-input::placeholder {
+    color: var(--color-text-placeholder);
+}
+
+/* Number inputs */
+.form-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.form-input[type="number"]::-webkit-outer-spin-button,
+.form-input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Color input */
+.form-color {
+    width: 100%;
+    height: 32px;
+    padding: 2px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-primary);
+    cursor: pointer;
+}
+
+.form-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.form-color::-webkit-color-swatch {
+    border: none;
+    border-radius: var(--radius-sm);
+}
+
+/* Form layout */
+.form-row {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.form-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.form-divider {
+    height: 1px;
+    background-color: var(--color-border-light);
+    margin: var(--space-2) 0;
+}
+
+/* Textarea for multi-line content */
+.form-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    resize: vertical;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-textarea:focus {
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+/* Select dropdown */
+.form-select {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.form-select:focus {
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+/* Checkbox/Toggle */
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+}
+
+.form-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.form-checkbox input[type="checkbox"]:checked {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+/* Property sections */
+.property-section {
+    margin-bottom: var(--space-4);
+}
+
+.property-section__title {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-3);
+}
+
+/* List editor (for attributes/methods) */
+.list-editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.list-editor__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.list-editor__item input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: var(--font-size-sm);
+}
+
+.list-editor__item input:focus {
+    box-shadow: none;
+}
+
+.list-editor__remove {
+    padding: var(--space-1);
+    color: var(--color-text-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+.list-editor__remove:hover {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.list-editor__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent);
+    background-color: var(--color-accent-light);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.list-editor__add:hover {
+    background-color: var(--color-accent);
+    color: white;
+}

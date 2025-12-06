@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMLify - UML Diagram Maker</title>
+    <meta name="description" content="Create professional UML diagrams with an intuitive drag-and-drop interface. Support for Sequence, Class, Use Case, State, Activity, ERD, Component, and Package diagrams.">
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/toolbar.css">
+    <link rel="stylesheet" href="styles/canvas.css">
+    <link rel="stylesheet" href="styles/properties.css">
+    <link rel="stylesheet" href="styles/shapes.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header__brand">
+                <svg class="header__logo" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect x="2" y="2" width="28" height="28" rx="6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M8 12h16M8 16h12M8 20h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h1 class="header__title">UMLify</h1>
+            </div>
+            
+            <nav class="header__tabs" id="diagram-tabs">
+                <button class="tab tab--active" data-diagram="sequence">Sequence</button>
+                <button class="tab" data-diagram="class">Class</button>
+                <button class="tab" data-diagram="usecase">Use Case</button>
+                <button class="tab" data-diagram="state">State</button>
+                <button class="tab" data-diagram="activity">Activity</button>
+                <button class="tab" data-diagram="erd">ERD</button>
+                <button class="tab" data-diagram="component">Component</button>
+                <button class="tab" data-diagram="package">Package</button>
+            </nav>
+            
+            <div class="header__actions">
+                <button class="btn btn--icon" id="btn-undo" title="Undo (Ctrl+Z)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 10h10a5 5 0 0 1 5 5v2"/>
+                        <polyline points="3 10 7 6 3 10 7 14"/>
+                    </svg>
+                </button>
+                <button class="btn btn--icon" id="btn-redo" title="Redo (Ctrl+Y)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10H11a5 5 0 0 0-5 5v2"/>
+                        <polyline points="21 10 17 6 21 10 17 14"/>
+                    </svg>
+                </button>
+                <div class="header__divider"></div>
+                <button class="btn btn--secondary" id="btn-export">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Export
+                </button>
+                <button class="btn btn--primary" id="btn-save">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Toolbar -->
+            <aside class="toolbar" id="toolbar">
+                <div class="toolbar__section">
+                    <div class="toolbar__title">Tools</div>
+                    <div class="toolbar__group">
+                        <button class="tool tool--active" data-tool="select" title="Select (V)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+                            </svg>
+                        </button>
+                        <button class="tool" data-tool="pan" title="Pan (H)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
+                                <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/>
+                                <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/>
+                                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+                            </svg>
+                        </button>
+                        <button class="tool" data-tool="delete" title="Delete (Del)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="toolbar__divider"></div>
+                
+                <div class="toolbar__section" id="diagram-tools">
+                    <div class="toolbar__title">Shapes</div>
+                    <div class="toolbar__group" id="shape-tools">
+                        <!-- Dynamically populated based on diagram type -->
+                    </div>
+                    
+                    <div class="toolbar__title">Connectors</div>
+                    <div class="toolbar__group" id="connector-tools">
+                        <!-- Dynamically populated based on diagram type -->
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- Canvas Container -->
+            <div class="canvas-container" id="canvas-container">
+                <svg id="canvas" class="canvas">
+                    <defs>
+                        <!-- Grid pattern -->
+                        <pattern id="grid-small" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <circle cx="10" cy="10" r="0.5" fill="#E0E0E0"/>
+                        </pattern>
+                        <pattern id="grid-large" width="100" height="100" patternUnits="userSpaceOnUse">
+                            <rect width="100" height="100" fill="url(#grid-small)"/>
+                            <circle cx="0" cy="0" r="1" fill="#BDBDBD"/>
+                            <circle cx="100" cy="0" r="1" fill="#BDBDBD"/>
+                            <circle cx="0" cy="100" r="1" fill="#BDBDBD"/>
+                            <circle cx="100" cy="100" r="1" fill="#BDBDBD"/>
+                        </pattern>
+                        
+                        <!-- Arrow markers -->
+                        <marker id="arrow-filled" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
+                        </marker>
+                        <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#333" stroke-width="1.5"/>
+                        </marker>
+                        <marker id="arrow-diamond" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 5 L 8 0 L 16 5 L 8 10 z" fill="#fff" stroke="#333" stroke-width="1"/>
+                        </marker>
+                        <marker id="arrow-diamond-filled" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 5 L 8 0 L 16 5 L 8 10 z" fill="#333"/>
+                        </marker>
+                        <marker id="arrow-triangle" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#fff" stroke="#333" stroke-width="1"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Grid layer -->
+                    <g id="grid-layer">
+                        <rect width="10000" height="10000" x="-5000" y="-5000" fill="url(#grid-large)"/>
+                    </g>
+                    
+                    <!-- Connections layer (below shapes) -->
+                    <g id="connection-layer"></g>
+                    
+                    <!-- Shapes layer -->
+                    <g id="shape-layer"></g>
+                    
+                    <!-- Interaction layer (selection, previews) -->
+                    <g id="interaction-layer"></g>
+                </svg>
+                
+                <!-- Zoom controls -->
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoom-out" title="Zoom Out">−</button>
+                    <span class="zoom-level" id="zoom-level">100%</span>
+                    <button class="zoom-btn" id="zoom-in" title="Zoom In">+</button>
+                    <button class="zoom-btn" id="zoom-fit" title="Fit to Screen">⊡</button>
+                </div>
+                
+                <!-- Connection preview (hidden by default) -->
+                <div class="connection-preview" id="connection-preview" style="display: none;">
+                    Click on target element to connect
+                </div>
+            </div>
+            
+            <!-- Properties Panel -->
+            <aside class="properties" id="properties-panel">
+                <div class="properties__header">
+                    <h2 class="properties__title">Properties</h2>
+                    <button class="btn btn--icon btn--sm" id="btn-collapse-properties" title="Collapse">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="properties__content" id="properties-content">
+                    <div class="properties__empty">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                        </svg>
+                        <p>Select an element to view its properties</p>
+                    </div>
+                    
+                    <!-- Dynamic properties form (shown when element selected) -->
+                    <form class="properties__form" id="properties-form" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label" for="prop-name">Name</label>
+                            <input type="text" class="form-input" id="prop-name" placeholder="Enter name...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="prop-stereotype">Stereotype</label>
+                            <input type="text" class="form-input" id="prop-stereotype" placeholder="<<stereotype>>">
+                        </div>
+                        
+                        <div class="form-divider"></div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Position</label>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label form-label--sm">X</label>
+                                    <input type="number" class="form-input" id="prop-x">
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label form-label--sm">Y</label>
+                                    <input type="number" class="form-input" id="prop-y">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Size</label>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label form-label--sm">W</label>
+                                    <input type="number" class="form-input" id="prop-width">
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label form-label--sm">H</label>
+                                    <input type="number" class="form-input" id="prop-height">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-divider"></div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Style</label>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label form-label--sm">Fill</label>
+                                    <input type="color" class="form-color" id="prop-fill" value="#FFFFFF">
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label form-label--sm">Stroke</label>
+                                    <input type="color" class="form-color" id="prop-stroke" value="#333333">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+        </main>
+        
+        <!-- Status Bar -->
+        <footer class="statusbar">
+            <span class="statusbar__item" id="status-mode">Mode: Sequence Diagram</span>
+            <span class="statusbar__item" id="status-tool">Tool: Select</span>
+            <span class="statusbar__item" id="status-selection">No selection</span>
+            <span class="statusbar__spacer"></span>
+            <span class="statusbar__item" id="status-position">X: 0, Y: 0</span>
+        </footer>
+    </div>
+    
+    <!-- Scripts (ES Modules) -->
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>

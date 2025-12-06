@@ -1,0 +1,441 @@
+/* ============================================
+   UMLify - Shapes CSS
+   SVG shape styling for all diagram types
+   ============================================ */
+
+/* Base Shape Styles */
+.shape {
+    cursor: pointer;
+    pointer-events: all;
+    transition: filter var(--transition-fast);
+}
+
+.shape:hover {
+    filter: brightness(0.98);
+}
+
+.shape--selected {
+    filter: none;
+}
+
+/* Shape fill and stroke */
+.shape__body {
+    fill: var(--shape-fill);
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+    transition: stroke var(--transition-fast), stroke-width var(--transition-fast);
+}
+
+.shape--selected .shape__body {
+    stroke: var(--shape-stroke-selected);
+    stroke-width: 2px;
+}
+
+.shape:hover .shape__body {
+    stroke: var(--shape-stroke-hover);
+}
+
+/* Shape text */
+.shape__text {
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    fill: var(--color-text-primary);
+    pointer-events: none;
+    user-select: none;
+}
+
+.shape__text--name {
+    font-weight: var(--font-weight-semibold);
+}
+
+.shape__text--stereotype {
+    font-size: var(--font-size-xs);
+    fill: var(--color-text-secondary);
+    font-style: italic;
+}
+
+/* Editable text (foreignObject) */
+.shape__editable {
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-1);
+}
+
+.shape__editable:focus {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--color-border-focus);
+    border-radius: var(--radius-sm);
+}
+
+/* Selection Handles */
+.selection-handle {
+    fill: var(--color-bg-primary);
+    stroke: var(--color-accent);
+    stroke-width: 1.5px;
+    cursor: pointer;
+}
+
+.selection-handle--nw {
+    cursor: nwse-resize;
+}
+
+.selection-handle--ne {
+    cursor: nesw-resize;
+}
+
+.selection-handle--sw {
+    cursor: nesw-resize;
+}
+
+.selection-handle--se {
+    cursor: nwse-resize;
+}
+
+.selection-handle--n {
+    cursor: ns-resize;
+}
+
+.selection-handle--s {
+    cursor: ns-resize;
+}
+
+.selection-handle--e {
+    cursor: ew-resize;
+}
+
+.selection-handle--w {
+    cursor: ew-resize;
+}
+
+/* Connection Points */
+.connection-point {
+    fill: var(--color-bg-primary);
+    stroke: var(--color-accent);
+    stroke-width: 1.5px;
+    opacity: 0;
+    cursor: crosshair;
+    transition: opacity var(--transition-fast);
+}
+
+.shape:hover .connection-point,
+.shape--selected .connection-point,
+.shape--connecting .connection-point {
+    opacity: 1;
+}
+
+.connection-point:hover {
+    fill: var(--color-accent);
+    transform: scale(1.2);
+}
+
+.connection-point--active {
+    fill: var(--color-accent);
+    opacity: 1;
+}
+
+/* ============================================
+   Sequence Diagram Shapes
+   ============================================ */
+
+/* Object/Actor Box */
+.shape-object .shape__body {
+    rx: var(--radius-md);
+    ry: var(--radius-md);
+}
+
+/* Lifeline */
+.lifeline {
+    stroke: var(--shape-stroke);
+    stroke-width: 1px;
+    stroke-dasharray: 8 4;
+    fill: none;
+}
+
+/* Activation Bar */
+.activation-bar {
+    fill: var(--color-bg-tertiary);
+    stroke: var(--shape-stroke);
+    stroke-width: 1px;
+}
+
+/* Fragment Box */
+.fragment-box .shape__body {
+    fill: rgba(255, 255, 255, 0.5);
+}
+
+.fragment-label {
+    fill: var(--color-bg-primary);
+    stroke: var(--shape-stroke);
+    stroke-width: 1px;
+}
+
+/* ============================================
+   Class Diagram Shapes
+   ============================================ */
+
+/* Class Box */
+.shape-class {
+    /* Three compartments */
+}
+
+.shape-class .shape__body {
+    rx: 0;
+    ry: 0;
+}
+
+.shape-class__divider {
+    stroke: var(--shape-stroke);
+    stroke-width: 1px;
+}
+
+.shape-class__name {
+    font-weight: var(--font-weight-bold);
+    text-anchor: middle;
+}
+
+.shape-class__attribute,
+.shape-class__method {
+    font-size: var(--font-size-xs);
+    text-anchor: start;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Interface (dashed border or <<interface>> stereotype) */
+.shape-interface .shape__body {
+    stroke-dasharray: 6 3;
+}
+
+/* Abstract class (italic name) */
+.shape-abstract .shape-class__name {
+    font-style: italic;
+}
+
+/* ============================================
+   Use Case Diagram Shapes
+   ============================================ */
+
+/* Actor (stick figure) */
+.shape-actor .actor-head {
+    fill: var(--shape-fill);
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+}
+
+.shape-actor .actor-body,
+.shape-actor .actor-arms,
+.shape-actor .actor-legs {
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+    stroke-linecap: round;
+    fill: none;
+}
+
+/* Use Case (oval) */
+.shape-usecase .shape__body {
+    rx: 50%;
+    ry: 30%;
+}
+
+/* System Boundary */
+.shape-system .shape__body {
+    fill: transparent;
+    stroke-dasharray: none;
+}
+
+/* ============================================
+   State Diagram Shapes
+   ============================================ */
+
+/* State (rounded rectangle) */
+.shape-state .shape__body {
+    rx: 15px;
+    ry: 15px;
+}
+
+/* Initial State (filled circle) */
+.shape-initial {
+    fill: var(--shape-stroke);
+}
+
+/* Final State (double circle) */
+.shape-final__outer {
+    fill: none;
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+}
+
+.shape-final__inner {
+    fill: var(--shape-stroke);
+}
+
+/* ============================================
+   Activity Diagram Shapes
+   ============================================ */
+
+/* Activity (rounded rectangle) */
+.shape-activity .shape__body {
+    rx: 20px;
+    ry: 20px;
+}
+
+/* Decision Diamond */
+.shape-decision .shape__body {
+    transform: rotate(45deg);
+    transform-origin: center;
+}
+
+/* Fork/Join Bar */
+.shape-fork .shape__body,
+.shape-join .shape__body {
+    fill: var(--shape-stroke);
+    rx: 2px;
+    ry: 2px;
+}
+
+/* ============================================
+   ERD Shapes
+   ============================================ */
+
+/* Entity */
+.shape-entity .shape__body {
+    rx: 0;
+    ry: 0;
+}
+
+/* Relationship Diamond */
+.shape-relationship .shape__body {
+    /* Diamond shape via path */
+}
+
+/* Attribute (oval) */
+.shape-attribute .shape__body {
+    rx: 50%;
+    ry: 50%;
+}
+
+/* Key attribute (underlined text) */
+.shape-attribute--key .shape__text {
+    text-decoration: underline;
+}
+
+/* ============================================
+   Component Diagram Shapes
+   ============================================ */
+
+/* Component */
+.shape-component .shape__body {
+    rx: var(--radius-sm);
+    ry: var(--radius-sm);
+}
+
+.shape-component__tab {
+    fill: var(--shape-fill);
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+}
+
+/* Interface (lollipop) */
+.interface-circle {
+    fill: var(--shape-fill);
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+}
+
+.interface-line {
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+}
+
+/* ============================================
+   Package Diagram Shapes
+   ============================================ */
+
+/* Package */
+.shape-package .shape__body {
+    rx: 0;
+    ry: 0;
+}
+
+.shape-package__tab {
+    fill: var(--shape-fill);
+    stroke: var(--shape-stroke);
+    stroke-width: var(--shape-stroke-width);
+}
+
+/* ============================================
+   Connectors/Arrows
+   ============================================ */
+
+.connector {
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.connector__line {
+    fill: none;
+    stroke: var(--shape-stroke);
+    stroke-width: 1.5px;
+    pointer-events: stroke;
+}
+
+/* Invisible hit area for easier selection */
+.connector__hitarea {
+    stroke: transparent;
+    stroke-width: 12px;
+    fill: none;
+    pointer-events: stroke;
+    cursor: pointer;
+}
+
+.connector:hover {
+    stroke: var(--shape-stroke-hover);
+}
+
+.connector--selected {
+    stroke: var(--shape-stroke-selected);
+}
+
+/* Dashed line (async, dependency, etc) */
+.connector--dashed {
+    stroke-dasharray: 8 4;
+}
+
+/* Dotted line (return message) */
+.connector--dotted {
+    stroke-dasharray: 3 3;
+}
+
+/* Connector label */
+.connector__label {
+    font-family: var(--font-family);
+    font-size: var(--font-size-xs);
+    fill: var(--color-text-primary);
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.connector__label-bg {
+    fill: var(--color-bg-canvas);
+}
+
+/* Connector waypoints (for editing) */
+.connector-waypoint {
+    fill: var(--color-accent);
+    cursor: move;
+    opacity: 0;
+}
+
+.connector:hover .connector-waypoint,
+.connector--selected .connector-waypoint {
+    opacity: 1;
+}

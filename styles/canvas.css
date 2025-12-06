@@ -1,0 +1,185 @@
+/* ============================================
+   UMLify - Canvas CSS
+   SVG canvas and zoom controls
+   ============================================ */
+
+.canvas-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-bg-canvas);
+}
+
+.canvas {
+    width: 100%;
+    height: 100%;
+    cursor: default;
+    user-select: none;
+}
+
+/* Cursor states based on tool */
+.canvas.cursor-select {
+    cursor: default;
+}
+
+.canvas.cursor-pan {
+    cursor: grab;
+}
+
+.canvas.cursor-pan:active,
+.canvas.cursor-panning {
+    cursor: grabbing;
+}
+
+.canvas.cursor-crosshair {
+    cursor: crosshair;
+}
+
+.canvas.cursor-move {
+    cursor: move;
+}
+
+.canvas.cursor-pointer {
+    cursor: pointer;
+}
+
+.canvas.cursor-text {
+    cursor: text;
+}
+
+.canvas.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+/* Resize cursors */
+.canvas.cursor-nwse-resize {
+    cursor: nwse-resize;
+}
+
+.canvas.cursor-nesw-resize {
+    cursor: nesw-resize;
+}
+
+.canvas.cursor-ns-resize {
+    cursor: ns-resize;
+}
+
+.canvas.cursor-ew-resize {
+    cursor: ew-resize;
+}
+
+/* Zoom Controls */
+.zoom-controls {
+    position: absolute;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.zoom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.zoom-btn:hover {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.zoom-level {
+    min-width: 48px;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+/* Connection Preview Tooltip */
+.connection-preview {
+    position: absolute;
+    top: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--space-2) var(--space-4);
+    background-color: var(--color-text-primary);
+    color: var(--color-bg-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-tooltip);
+    pointer-events: none;
+}
+
+/* Minimap (optional) */
+.minimap {
+    position: absolute;
+    bottom: var(--space-4);
+    left: var(--space-4);
+    width: 150px;
+    height: 100px;
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.minimap__viewport {
+    position: absolute;
+    border: 2px solid var(--color-accent);
+    background-color: rgba(0, 102, 255, 0.1);
+    pointer-events: none;
+}
+
+/* Selection Rectangle (rubber band) */
+.selection-rect {
+    fill: rgba(0, 102, 255, 0.1);
+    stroke: var(--color-accent);
+    stroke-width: 1;
+    stroke-dasharray: 4 2;
+}
+
+/* Connection line preview */
+.connection-line-preview {
+    stroke: var(--color-accent);
+    stroke-width: 2;
+    stroke-dasharray: 6 3;
+    fill: none;
+    pointer-events: none;
+}
+
+/* Drop zone highlight */
+.drop-zone-highlight {
+    fill: rgba(0, 102, 255, 0.15);
+    stroke: var(--color-accent);
+    stroke-width: 2;
+    stroke-dasharray: none;
+    pointer-events: none;
+}
+
+/* Valid/Invalid drop feedback */
+.drop-zone-valid {
+    stroke: var(--color-success);
+    fill: rgba(34, 197, 94, 0.15);
+}
+
+.drop-zone-invalid {
+    stroke: var(--color-error);
+    fill: rgba(239, 68, 68, 0.15);
+}
