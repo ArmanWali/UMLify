@@ -90,6 +90,85 @@ export class SequenceObject extends Shape {
             lifeline: (y) => ({ x: midX, y: y })
         };
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+
+        // Update transform
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        // Update body
+        const body = this.element.querySelector('.shape__body');
+        if (body) {
+            body.setAttribute('width', this.width);
+            body.setAttribute('height', this.height);
+            body.setAttribute('fill', this.style.fill);
+            body.setAttribute('stroke', this.style.stroke);
+        }
+
+        // Update name
+        const text = this.element.querySelector('.shape__text--name');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2);
+            text.textContent = this.properties.name;
+        }
+
+        // Update stereotype
+        const stereotype = this.element.querySelector('.shape__text--stereotype');
+        if (stereotype) {
+            stereotype.setAttribute('x', this.width / 2);
+        }
+
+        // Update lifeline
+        const lifeline = this.element.querySelector('.lifeline');
+        if (lifeline) {
+            lifeline.setAttribute('x1', this.width / 2);
+            lifeline.setAttribute('y1', this.height);
+            lifeline.setAttribute('x2', this.width / 2);
+            // Keep existing y2 or update it? 
+            // Usually lifeline length is independent of object height, but starts at object bottom.
+            // If object height changes, lifeline start (y1) changes.
+            // We should preserve the length or just ensure it starts correctly.
+            // For now, let's just update x1, y1, x2. y2 stays as is (absolute coordinate? No, relative to group).
+            // Wait, y2 in render is `this.height + 300`.
+            // If I resize object height, lifeline should shift down.
+            // But y2 is relative to group (0,0).
+            // So if I increase height by 10, y1 increases by 10. y2 should probably increase by 10 too to keep length constant?
+            // Or just let y2 be.
+            // Let's just update start point.
+        }
+
+        // Connection points are calculated dynamically in getConnectionPoints, so no DOM update needed for them?
+        // Wait, render() calls renderConnectionPoints(this.element).
+        // Base Shape.renderConnectionPoints adds circles.
+        // So I DO need to update them if I want them to move visually.
+        // SequenceObject overrides getConnectionPoints but uses base renderConnectionPoints?
+        // No, SequenceObject calls `this.renderConnectionPoints(this.element)` in render.
+        // Base Shape has `renderConnectionPoints`.
+        // So yes, I need to update the circles.
+
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
+    }
 }
 
 /**
@@ -189,6 +268,63 @@ export class SequenceActor extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+
+        // Update transform
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const centerX = this.width / 2;
+
+        // Update head
+        const head = this.element.querySelector('.actor-head');
+        if (head) {
+            head.setAttribute('cx', centerX);
+        }
+
+        // Update body
+        const body = this.element.querySelector('.actor-body');
+        if (body) {
+            body.setAttribute('x1', centerX);
+            body.setAttribute('x2', centerX);
+        }
+
+        // Update arms
+        const arms = this.element.querySelector('.actor-arms');
+        if (arms) {
+            arms.setAttribute('x1', centerX - 15);
+            arms.setAttribute('x2', centerX + 15);
+        }
+
+        // Update legs
+        const legs = this.element.querySelectorAll('.actor-legs');
+        if (legs.length >= 2) {
+            // Left leg
+            legs[0].setAttribute('x1', centerX);
+            legs[0].setAttribute('x2', centerX - 12);
+            // Right leg
+            legs[1].setAttribute('x1', centerX);
+            legs[1].setAttribute('x2', centerX + 12);
+        }
+
+        // Update name
+        const text = this.element.querySelector('.shape__text--name');
+        if (text) {
+            text.setAttribute('x', centerX);
+        }
+
+        // Update lifeline
+        const lifeline = this.element.querySelector('.lifeline');
+        if (lifeline) {
+            lifeline.setAttribute('x1', centerX);
+            lifeline.setAttribute('y1', this.height);
+            lifeline.setAttribute('x2', centerX);
+        }
     }
 }
 

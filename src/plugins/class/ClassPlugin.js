@@ -122,6 +122,45 @@ export class ClassShape extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+
+        // Update base shape (transform, body, name, connection points)
+        super.updateElement();
+
+        // Calculate compartment heights again or use current height
+        const nameHeight = 40;
+        const attrHeight = Math.max(30, this.properties.attributes.length * 18 + 10);
+
+        // Update dividers
+        const dividers = this.element.querySelectorAll('.shape-class__divider');
+        if (dividers.length >= 1) {
+            dividers[0].setAttribute('x2', this.width);
+            dividers[0].setAttribute('y1', nameHeight);
+            dividers[0].setAttribute('y2', nameHeight);
+        }
+        if (dividers.length >= 2) {
+            dividers[1].setAttribute('x2', this.width);
+            dividers[1].setAttribute('y1', nameHeight + attrHeight);
+            dividers[1].setAttribute('y2', nameHeight + attrHeight);
+        }
+
+        // Update stereotype position
+        const stereotype = this.element.querySelector('.shape__text--stereotype');
+        if (stereotype) {
+            stereotype.setAttribute('x', this.width / 2);
+        }
+
+        // Update name position
+        const nameText = this.element.querySelector('.shape-class__name');
+        if (nameText) {
+            nameText.setAttribute('x', this.width / 2);
+        }
+    }
 }
 
 /**

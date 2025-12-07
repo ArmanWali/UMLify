@@ -31,6 +31,20 @@ export class ActivityInitial extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+        const circle = this.element.querySelector('circle');
+        if (circle) {
+            circle.setAttribute('cx', this.width / 2);
+            circle.setAttribute('cy', this.height / 2);
+            circle.setAttribute('r', Math.min(this.width, this.height) / 2 - 3); // Padding
+        }
+    }
 }
 
 /**
@@ -66,6 +80,30 @@ export class ActivityFinal extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const r = Math.min(this.width, this.height) / 2;
+
+        const outer = this.element.querySelector('circle:first-child');
+        if (outer) {
+            outer.setAttribute('cx', this.width / 2);
+            outer.setAttribute('cy', this.height / 2);
+            outer.setAttribute('r', r - 2);
+        }
+
+        const inner = this.element.querySelector('circle:last-child');
+        if (inner) {
+            inner.setAttribute('cx', this.width / 2);
+            inner.setAttribute('cy', this.height / 2);
+            inner.setAttribute('r', (r - 2) * 0.6);
+        }
+    }
 }
 
 /**
@@ -96,12 +134,55 @@ export class ActionNode extends Shape {
         text.setAttribute('y', this.height / 2);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('class', 'shape__text');
         text.textContent = this.properties.name;
         this.element.appendChild(text);
 
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('rect');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+            rect.setAttribute('fill', this.style.fill);
+            rect.setAttribute('stroke', this.style.stroke);
+        }
+
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2);
+            text.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 
@@ -120,8 +201,9 @@ export class DecisionNode extends Shape {
         this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
 
         const diamond = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        const cx = 20, cy = 20;
-        diamond.setAttribute('points', `${cx},2 38,${cy} ${cx},38 2,${cy}`);
+        const w = this.width;
+        const h = this.height;
+        diamond.setAttribute('points', `${w / 2},0 ${w},${h / 2} ${w / 2},${h} 0,${h / 2}`);
         diamond.setAttribute('fill', this.style.fill);
         diamond.setAttribute('stroke', this.style.stroke);
         this.element.appendChild(diamond);
@@ -129,6 +211,42 @@ export class DecisionNode extends Shape {
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const diamond = this.element.querySelector('polygon');
+        if (diamond) {
+            const w = this.width;
+            const h = this.height;
+            diamond.setAttribute('points', `${w / 2},0 ${w},${h / 2} ${w / 2},${h} 0,${h / 2}`);
+            diamond.setAttribute('fill', this.style.fill);
+            diamond.setAttribute('stroke', this.style.stroke);
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 
@@ -155,6 +273,20 @@ export class ActivityForkJoin extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('rect');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+        }
     }
 }
 
@@ -200,6 +332,36 @@ export class Swimlane extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        // Main rect (first child)
+        const rect = this.element.querySelector('rect:first-child');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+            rect.setAttribute('stroke', this.style.stroke);
+        }
+
+        // Header rect (second child)
+        const header = this.element.querySelector('rect:nth-child(2)');
+        if (header) {
+            header.setAttribute('width', this.width);
+            header.setAttribute('stroke', this.style.stroke);
+        }
+
+        // Text
+        const text = this.element.querySelector('text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.textContent = this.properties.name;
+        }
+    }
 }
 
 /**
@@ -229,12 +391,55 @@ export class ObjectNode extends Shape {
         text.setAttribute('y', this.height / 2);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('class', 'shape__text');
         text.textContent = this.properties.name;
         this.element.appendChild(text);
 
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('rect');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+            rect.setAttribute('fill', this.style.fill);
+            rect.setAttribute('stroke', this.style.stroke);
+        }
+
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2);
+            text.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 
@@ -255,20 +460,68 @@ export class SendSignal extends Shape {
 
         // Pentagon pointing right
         const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        polygon.setAttribute('points', `0,0 80,0 100,20 80,40 0,40`);
+        const w = this.width;
+        const h = this.height;
+        polygon.setAttribute('points', `0,0 ${w - 20},0 ${w},${h / 2} ${w - 20},${h} 0,${h}`);
         polygon.setAttribute('fill', this.style.fill);
         polygon.setAttribute('stroke', this.style.stroke);
         this.element.appendChild(polygon);
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', 45);
-        text.setAttribute('y', 25);
+        text.setAttribute('x', (this.width - 20) / 2);
+        text.setAttribute('y', this.height / 2);
         text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('class', 'shape__text');
         text.textContent = this.properties.name;
         this.element.appendChild(text);
 
+        this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const polygon = this.element.querySelector('polygon');
+        if (polygon) {
+            const w = this.width;
+            const h = this.height;
+            polygon.setAttribute('points', `0,0 ${w - 20},0 ${w},${h / 2} ${w - 20},${h} 0,${h}`);
+            polygon.setAttribute('fill', this.style.fill);
+            polygon.setAttribute('stroke', this.style.stroke);
+        }
+
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', (this.width - 20) / 2);
+            text.setAttribute('y', this.height / 2);
+            text.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 
@@ -289,20 +542,68 @@ export class AcceptEvent extends Shape {
 
         // Pentagon with concave left
         const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        polygon.setAttribute('points', `20,0 100,0 100,40 20,40 0,20`);
+        const w = this.width;
+        const h = this.height;
+        polygon.setAttribute('points', `20,0 ${w},0 ${w},${h} 20,${h} 0,${h / 2}`);
         polygon.setAttribute('fill', this.style.fill);
         polygon.setAttribute('stroke', this.style.stroke);
         this.element.appendChild(polygon);
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', 55);
-        text.setAttribute('y', 25);
+        text.setAttribute('x', 20 + (this.width - 20) / 2);
+        text.setAttribute('y', this.height / 2);
         text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('class', 'shape__text');
         text.textContent = this.properties.name;
         this.element.appendChild(text);
 
+        this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const polygon = this.element.querySelector('polygon');
+        if (polygon) {
+            const w = this.width;
+            const h = this.height;
+            polygon.setAttribute('points', `20,0 ${w},0 ${w},${h} 20,${h} 0,${h / 2}`);
+            polygon.setAttribute('fill', this.style.fill);
+            polygon.setAttribute('stroke', this.style.stroke);
+        }
+
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', 20 + (this.width - 20) / 2);
+            text.setAttribute('y', this.height / 2);
+            text.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 

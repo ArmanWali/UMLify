@@ -89,6 +89,69 @@ export class UseCaseActor extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+
+        // Update transform
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const centerX = this.width / 2;
+
+        // Update head
+        const head = this.element.querySelector('circle');
+        if (head) {
+            head.setAttribute('cx', centerX);
+        }
+
+        // Update body and limbs
+        const lines = this.element.querySelectorAll('line');
+        if (lines.length >= 4) {
+            // Body
+            lines[0].setAttribute('x1', centerX);
+            lines[0].setAttribute('x2', centerX);
+
+            // Arms
+            lines[1].setAttribute('x1', centerX - 15);
+            lines[1].setAttribute('x2', centerX + 15);
+
+            // Left Leg
+            lines[2].setAttribute('x1', centerX);
+            lines[2].setAttribute('x2', centerX - 12);
+
+            // Right Leg
+            lines[3].setAttribute('x1', centerX);
+            lines[3].setAttribute('x2', centerX + 12);
+        }
+
+        // Update name
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', centerX);
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', centerX);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', centerX);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
+    }
 }
 
 /**
@@ -136,6 +199,54 @@ export class UseCaseShape extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+
+        // Update transform
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        // Update ellipse body
+        const ellipse = this.element.querySelector('ellipse.shape__body');
+        if (ellipse) {
+            ellipse.setAttribute('cx', this.width / 2);
+            ellipse.setAttribute('cy', this.height / 2);
+            ellipse.setAttribute('rx', this.width / 2);
+            ellipse.setAttribute('ry', this.height / 2);
+            ellipse.setAttribute('fill', this.style.fill);
+            ellipse.setAttribute('stroke', this.style.stroke);
+        }
+
+        // Update text position
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2);
+            text.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
+    }
 }
 
 /**
@@ -180,6 +291,41 @@ export class SystemBoundary extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+
+        // Update transform
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        // Update body
+        const body = this.element.querySelector('.shape__body');
+        if (body) {
+            body.setAttribute('width', this.width);
+            body.setAttribute('height', this.height);
+            body.setAttribute('fill', 'none');
+            body.setAttribute('stroke', this.style.stroke);
+        }
+
+        // Update text position (centered horizontally, fixed top y)
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            // y is fixed at 20
+        }
+
+        // Update connection points (if any - SystemBoundary doesn't call renderConnectionPoints in render()?)
+        // Wait, render() DOES NOT call renderConnectionPoints!
+        // But if I add them, I should update them.
+        // Let's check render() again. It does NOT call renderConnectionPoints.
+        // So SystemBoundary might not be connectable?
+        // If it's not connectable, I don't need to update connection points.
+        // But if I add them later, I should.
+        // For now, I'll just update body and text.
     }
 }
 

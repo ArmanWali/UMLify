@@ -28,6 +28,7 @@ export class PackageShape extends Shape {
 
         // Tab
         const tab = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        tab.setAttribute('class', 'package-tab');
         tab.setAttribute('x', 0);
         tab.setAttribute('y', 0);
         tab.setAttribute('width', tabWidth);
@@ -38,6 +39,7 @@ export class PackageShape extends Shape {
 
         // Body
         const body = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        body.setAttribute('class', 'package-body');
         body.setAttribute('x', 0);
         body.setAttribute('y', tabHeight);
         body.setAttribute('width', this.width);
@@ -50,6 +52,7 @@ export class PackageShape extends Shape {
         let nameY = tabHeight + 25;
         if (this.properties.stereotype) {
             const stereotype = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            stereotype.setAttribute('class', 'package-stereotype');
             stereotype.setAttribute('x', this.width / 2);
             stereotype.setAttribute('y', tabHeight + 20);
             stereotype.setAttribute('text-anchor', 'middle');
@@ -62,6 +65,7 @@ export class PackageShape extends Shape {
 
         // Name
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('class', 'package-name');
         text.setAttribute('x', this.width / 2);
         text.setAttribute('y', nameY);
         text.setAttribute('text-anchor', 'middle');
@@ -72,6 +76,54 @@ export class PackageShape extends Shape {
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const tabHeight = 20;
+
+        const body = this.element.querySelector('.package-body');
+        if (body) {
+            body.setAttribute('width', this.width);
+            body.setAttribute('height', this.height - tabHeight);
+            body.setAttribute('fill', this.style.fill);
+            body.setAttribute('stroke', this.style.stroke);
+        }
+
+        const stereotype = this.element.querySelector('.package-stereotype');
+        if (stereotype) {
+            stereotype.setAttribute('x', this.width / 2);
+        }
+
+        const name = this.element.querySelector('.package-name');
+        if (name) {
+            name.setAttribute('x', this.width / 2);
+            name.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 
@@ -141,6 +193,48 @@ export class NamespaceShape extends Shape {
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('rect');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+            rect.setAttribute('fill', this.style.fill);
+            rect.setAttribute('stroke', this.style.stroke);
+        }
+
+        const text = this.element.querySelector('text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2 + 5);
+            text.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 

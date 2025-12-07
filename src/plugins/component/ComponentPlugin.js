@@ -25,6 +25,7 @@ export class ComponentShape extends Shape {
 
         // Main rectangle
         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'component-body');
         rect.setAttribute('width', this.width);
         rect.setAttribute('height', this.height);
         rect.setAttribute('fill', this.style.fill);
@@ -54,6 +55,7 @@ export class ComponentShape extends Shape {
         let textY = 25;
         if (this.properties.stereotype) {
             const stereotype = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            stereotype.setAttribute('class', 'component-stereotype');
             stereotype.setAttribute('x', this.width / 2);
             stereotype.setAttribute('y', 20);
             stereotype.setAttribute('text-anchor', 'middle');
@@ -66,6 +68,7 @@ export class ComponentShape extends Shape {
 
         // Name
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('class', 'component-name');
         text.setAttribute('x', this.width / 2);
         text.setAttribute('y', this.properties.stereotype ? 40 : this.height / 2 + 5);
         text.setAttribute('text-anchor', 'middle');
@@ -76,6 +79,55 @@ export class ComponentShape extends Shape {
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('.component-body');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+            rect.setAttribute('fill', this.style.fill);
+            rect.setAttribute('stroke', this.style.stroke);
+        }
+
+        const stereotype = this.element.querySelector('.component-stereotype');
+        if (stereotype) {
+            stereotype.setAttribute('x', this.width / 2);
+        }
+
+        const name = this.element.querySelector('.component-name');
+        if (name) {
+            name.setAttribute('x', this.width / 2);
+            if (!this.properties.stereotype) {
+                name.setAttribute('y', this.height / 2 + 5);
+            }
+            name.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 
@@ -125,6 +177,34 @@ export class InterfaceLollipop extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        // Interface lollipop is usually fixed size, but if resized, we could center it?
+        // Or scale it?
+        // Let's center it.
+        const cx = this.width / 2;
+
+        const circle = this.element.querySelector('circle');
+        if (circle) circle.setAttribute('cx', cx);
+
+        const line = this.element.querySelector('line');
+        if (line) {
+            line.setAttribute('x1', cx);
+            line.setAttribute('x2', cx);
+        }
+
+        const text = this.element.querySelector('text');
+        if (text) {
+            text.setAttribute('x', cx);
+            text.textContent = this.properties.name;
+        }
+    }
 }
 
 /**
@@ -150,6 +230,20 @@ export class PortShape extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('rect');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+        }
     }
 }
 
@@ -187,6 +281,15 @@ export class ProvidedInterface extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+        // Fixed size shape, just update transform
     }
 }
 
@@ -226,6 +329,15 @@ export class RequiredInterface extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+        // Fixed size shape, just update transform
     }
 }
 
@@ -280,6 +392,56 @@ export class ArtifactShape extends Shape {
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const path = this.element.querySelector('path:first-child');
+        if (path) {
+            const w = this.width;
+            const h = this.height;
+            path.setAttribute('d', `M 0 0 L ${w - 20} 0 L ${w} 20 L ${w} ${h} L 0 ${h} Z`);
+        }
+
+        const corner = this.element.querySelector('path:nth-child(2)');
+        if (corner) {
+            const w = this.width;
+            corner.setAttribute('d', `M ${w - 20} 0 L ${w - 20} 20 L ${w} 20`);
+        }
+
+        const stereotype = this.element.querySelector('text:nth-of-type(1)');
+        if (stereotype) {
+            stereotype.setAttribute('x', this.width / 2);
+        }
+
+        const name = this.element.querySelector('text:last-of-type');
+        if (name) {
+            name.setAttribute('x', this.width / 2);
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 

@@ -37,6 +37,21 @@ export class InitialState extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const circle = this.element.querySelector('circle');
+        if (circle) {
+            circle.setAttribute('cx', this.width / 2);
+            circle.setAttribute('cy', this.height / 2);
+            circle.setAttribute('r', Math.min(this.width, this.height) / 2 - 2);
+        }
+    }
 }
 
 /**
@@ -78,6 +93,30 @@ export class FinalState extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const r = Math.min(this.width, this.height) / 2;
+
+        const outer = this.element.querySelector('circle:first-child');
+        if (outer) {
+            outer.setAttribute('cx', this.width / 2);
+            outer.setAttribute('cy', this.height / 2);
+            outer.setAttribute('r', r - 2);
+        }
+
+        const inner = this.element.querySelector('circle:last-child');
+        if (inner) {
+            inner.setAttribute('cx', this.width / 2);
+            inner.setAttribute('cy', this.height / 2);
+            inner.setAttribute('r', r - 6);
+        }
     }
 }
 
@@ -140,6 +179,53 @@ export class StateShape extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('.shape__body');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+            rect.setAttribute('fill', this.style.fill);
+            rect.setAttribute('stroke', this.style.stroke);
+        }
+
+        const text = this.element.querySelector('.shape__text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2);
+            text.textContent = this.properties.name;
+        }
+
+        const divider = this.element.querySelector('line');
+        if (divider) {
+            divider.setAttribute('x2', this.width);
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
+    }
 }
 
 /**
@@ -189,6 +275,33 @@ export class CompositeState extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('.shape__body');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+            rect.setAttribute('fill', this.style.fill);
+            rect.setAttribute('stroke', this.style.stroke);
+        }
+
+        const divider = this.element.querySelector('line');
+        if (divider) {
+            divider.setAttribute('x2', this.width);
+        }
+
+        // Text position is fixed at 10, 20
+        const text = this.element.querySelector('text');
+        if (text) {
+            text.textContent = this.properties.name;
+        }
+    }
 }
 
 /**
@@ -221,6 +334,23 @@ export class ChoiceState extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const diamond = this.element.querySelector('polygon');
+        if (diamond) {
+            const cx = this.width / 2;
+            const cy = this.height / 2;
+            diamond.setAttribute('points', `${cx},2 ${this.width - 2},${cy} ${cx},${this.height - 2} 2,${cy}`);
+            diamond.setAttribute('fill', this.style.fill);
+            diamond.setAttribute('stroke', this.style.stroke);
+        }
+    }
 }
 
 /**
@@ -251,6 +381,20 @@ export class ForkJoinBar extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const rect = this.element.querySelector('rect');
+        if (rect) {
+            rect.setAttribute('width', this.width);
+            rect.setAttribute('height', this.height);
+        }
     }
 }
 
@@ -293,6 +437,27 @@ export class HistoryState extends Shape {
 
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const circle = this.element.querySelector('circle');
+        if (circle) {
+            circle.setAttribute('cx', this.width / 2);
+            circle.setAttribute('cy', this.height / 2);
+            circle.setAttribute('r', Math.min(this.width, this.height) / 2 - 2);
+        }
+
+        const text = this.element.querySelector('text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2);
+        }
     }
 }
 

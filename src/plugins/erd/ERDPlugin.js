@@ -32,6 +32,7 @@ export class EntityShape extends Shape {
 
         // Main body
         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'entity-body');
         rect.setAttribute('width', this.width);
         rect.setAttribute('height', this.height);
         rect.setAttribute('fill', this.style.fill);
@@ -40,6 +41,7 @@ export class EntityShape extends Shape {
 
         // Header
         const header = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        header.setAttribute('class', 'entity-header');
         header.setAttribute('width', this.width);
         header.setAttribute('height', headerHeight);
         header.setAttribute('fill', '#E0E7FF');
@@ -48,6 +50,7 @@ export class EntityShape extends Shape {
 
         // Entity name
         const nameText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        nameText.setAttribute('class', 'entity-name');
         nameText.setAttribute('x', this.width / 2);
         nameText.setAttribute('y', 22);
         nameText.setAttribute('text-anchor', 'middle');
@@ -79,6 +82,61 @@ export class EntityShape extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const body = this.element.querySelector('.entity-body');
+        if (body) {
+            body.setAttribute('width', this.width);
+            body.setAttribute('height', this.height);
+            body.setAttribute('fill', this.style.fill);
+            body.setAttribute('stroke', this.style.stroke);
+        }
+
+        const header = this.element.querySelector('.entity-header');
+        if (header) {
+            header.setAttribute('width', this.width);
+            header.setAttribute('stroke', this.style.stroke);
+        }
+
+        const nameText = this.element.querySelector('.entity-name');
+        if (nameText) {
+            nameText.setAttribute('x', this.width / 2);
+            nameText.textContent = this.properties.name;
+        }
+
+        // Weak entity outer rect
+        const outer = this.element.querySelector('.weak-outer');
+        if (outer) {
+            outer.setAttribute('width', this.width + 6);
+            outer.setAttribute('height', this.height + 6);
+            outer.setAttribute('stroke', this.style.stroke);
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
+    }
 }
 
 /**
@@ -95,6 +153,7 @@ export class WeakEntity extends EntityShape {
 
         // Add outer rectangle for weak entity
         const outer = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        outer.setAttribute('class', 'weak-outer');
         outer.setAttribute('x', -3);
         outer.setAttribute('y', -3);
         outer.setAttribute('width', this.width + 6);
@@ -164,6 +223,34 @@ export class AttributeShape extends Shape {
         container.appendChild(this.element);
         return this.element;
     }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const ellipses = this.element.querySelectorAll('ellipse');
+        ellipses.forEach((ellipse, index) => {
+            ellipse.setAttribute('cx', this.width / 2);
+            ellipse.setAttribute('cy', this.height / 2);
+            if (index === 0) { // Outer
+                ellipse.setAttribute('rx', this.width / 2 - 2);
+                ellipse.setAttribute('ry', this.height / 2 - 2);
+            } else { // Inner (multivalued)
+                ellipse.setAttribute('rx', this.width / 2 - 6);
+                ellipse.setAttribute('ry', this.height / 2 - 6);
+            }
+        });
+
+        const text = this.element.querySelector('text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2 + 4);
+            text.textContent = this.properties.name;
+        }
+    }
 }
 
 /**
@@ -200,6 +287,49 @@ export class RelationshipShape extends Shape {
         this.renderConnectionPoints(this.element);
         container.appendChild(this.element);
         return this.element;
+    }
+
+    /**
+     * Update element to match current state
+     */
+    updateElement() {
+        if (!this.element) return;
+        this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+
+        const diamond = this.element.querySelector('polygon');
+        if (diamond) {
+            const cx = this.width / 2;
+            const cy = this.height / 2;
+            diamond.setAttribute('points', `${cx},2 ${this.width - 2},${cy} ${cx},${this.height - 2} 2,${cy}`);
+            diamond.setAttribute('fill', '#FEF3C7');
+            diamond.setAttribute('stroke', this.style.stroke);
+        }
+
+        const text = this.element.querySelector('text');
+        if (text) {
+            text.setAttribute('x', this.width / 2);
+            text.setAttribute('y', this.height / 2 + 4);
+            text.textContent = this.properties.name;
+        }
+
+        // Update connection points
+        const cpTop = this.element.querySelector('.connection-point--top');
+        if (cpTop) cpTop.setAttribute('cx', this.width / 2);
+
+        const cpRight = this.element.querySelector('.connection-point--right');
+        if (cpRight) {
+            cpRight.setAttribute('cx', this.width);
+            cpRight.setAttribute('cy', this.height / 2);
+        }
+
+        const cpBottom = this.element.querySelector('.connection-point--bottom');
+        if (cpBottom) {
+            cpBottom.setAttribute('cx', this.width / 2);
+            cpBottom.setAttribute('cy', this.height);
+        }
+
+        const cpLeft = this.element.querySelector('.connection-point--left');
+        if (cpLeft) cpLeft.setAttribute('cy', this.height / 2);
     }
 }
 
