@@ -32,11 +32,16 @@ export class ClassShape extends Shape {
         this.element.setAttribute('data-id', this.id);
         this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
 
-        // Calculate compartment heights
+        // Calculate minimum compartment heights based on content
         const nameHeight = 40;
         const attrHeight = Math.max(30, this.properties.attributes.length * 18 + 10);
         const methodHeight = Math.max(30, this.properties.methods.length * 18 + 10);
-        this.height = nameHeight + attrHeight + methodHeight;
+        const minHeight = nameHeight + attrHeight + methodHeight;
+        
+        // Only auto-resize if current height is smaller than minimum needed
+        if (this.height < minHeight) {
+            this.height = minHeight;
+        }
 
         // Main rectangle
         const body = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -384,6 +389,29 @@ export class ClassPlugin extends DiagramPlugin {
                 targetArrow: 'triangle'
             })
         ];
+    }
+
+    getShapeDefinitions() {
+        return {
+            'class': new ShapeDefinition({
+                type: 'class',
+                name: 'Class',
+                defaultWidth: 150,
+                defaultHeight: 120
+            }),
+            'interface': new ShapeDefinition({
+                type: 'interface',
+                name: 'Interface',
+                defaultWidth: 150,
+                defaultHeight: 120
+            }),
+            'package': new ShapeDefinition({
+                type: 'package',
+                name: 'Package',
+                defaultWidth: 200,
+                defaultHeight: 150
+            })
+        };
     }
 
     getPropertyEditors(element) {

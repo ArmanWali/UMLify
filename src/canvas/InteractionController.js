@@ -44,6 +44,11 @@ export class InteractionController {
         this.connectionSource = null;
         this.connectionPreview = null;
 
+        // Connection endpoint dragging state
+        this.draggingEndpoint = null;
+        this.draggingConnection = null;
+        this.draggingEndpointType = null; // 'source' or 'target'
+
         // Text editor reference (set from main.js)
         this.textEditor = null;
 
@@ -194,6 +199,21 @@ export class InteractionController {
             }
         }
 
+        // Check for connector endpoint click (for reconnection)
+        const endpointHandle = target.closest('.connector__endpoint');
+        if (endpointHandle) {
+            const connectorElement = endpointHandle.closest('.connector');
+            if (connectorElement) {
+                const connId = connectorElement.dataset.id;
+                const connection = this.diagram.getConnection(connId);
+                if (connection) {
+                    const isSource = endpointHandle.classList.contains('connector__endpoint--source');
+                    this.startEndpointDrag(connection, isSource ? 'source' : 'target', point);
+                    return;
+                }
+            }
+        }
+
         // Find what was clicked
         const shapeElement = target.closest('.shape');
         const connectorElement = target.closest('.connector');
@@ -280,6 +300,90 @@ export class InteractionController {
 
         // Emit update for handle repositioning
         this.eventBus.emit(Events.SHAPE_UPDATED, { shape: this.resizingShape });
+    }
+
+    /**
+     * Start dragging a connector endpoint for reconnection
+     */
+    startEndpointDrag(connection, endpointType, point) {
+        this.draggingEndpoint = true;
+        this.state = 'dragging-endpoint';
+        this.draggingConnection = connection;
+        this.draggingEndpointType = endpointType;
+        this.dragStartPoint = new Point(point.x, point.y);
+        
+        // Select the connection
+        this.selectionManager.selectConnection(connection);
+        
+        this.canvas.setCursor('move');
+    }
+
+    /**
+     * Handle endpoint dragging
+     */
+    doEndpointDrag(point, target) {
+        if (!this.draggingConnection) return;
+
+        // Update the endpoint position visually (preview)
+        // The connection will snap to a shape when dropped
+        
+        // Highlight potential target shapes
+        document.querySelectorAll('.shape--connecting').forEach(el => {
+            el.classList.remove('shape--connecting');
+        });
+        
+        const shapeElement = target.closest('.shape');
+        if (shapeElement) {
+            const shapeId = shapeElement.dataset.id;
+            // Don't allow connecting to the other end's shape for the same connection
+            const otherShapeId = this.draggingEndpointType === 'source' 
+                ? this.draggingConnection.target.shapeId 
+                : this.draggingConnection.source.shapeId;
+            
+            if (shapeId !== otherShapeId) {
+                shapeElement.classList.add('shape--connecting');
+            }
+        }
+    }
+
+    /**
+     * End endpoint dragging - reconnect to new shape if valid
+     */
+    endEndpointDrag(point, target) {
+        if (!this.draggingConnection) return;
+
+        const shapeElement = target?.closest('.shape');
+        if (shapeElement) {
+            const shapeId = shapeElement.dataset.id;
+            const newShape = this.diagram.getShape(shapeId);
+            
+            if (newShape) {
+                // Check it's not the same shape as the other endpoint
+                const otherShapeId = this.draggingEndpointType === 'source' 
+                    ? this.draggingConnection.target.shapeId 
+                    : this.draggingConnection.source.shapeId;
+                
+                if (shapeId !== otherShapeId) {
+                    // Reconnect
+                    if (this.draggingEndpointType === 'source') {
+                        this.draggingConnection.setSource(newShape, 'auto');
+                    } else {
+                        this.draggingConnection.setTarget(newShape, 'auto');
+                    }
+                }
+            }
+        }
+
+        // Clean up
+        document.querySelectorAll('.shape--connecting').forEach(el => {
+            el.classList.remove('shape--connecting');
+        });
+        
+        this.draggingEndpoint = false;
+        this.state = 'idle';
+        this.draggingConnection = null;
+        this.draggingEndpointType = null;
+        this.canvas.setCursor('select');
     }
 
     /**
@@ -407,21 +511,39 @@ export class InteractionController {
 
     handleConnectorToolClick(point, target) {
         const shapeElement = target.closest('.shape');
+        
+        // For sequence diagrams, also check if clicked on lifeline
+        const lifelineElement = target.closest('.lifeline');
 
-        if (!shapeElement) {
+        if (!shapeElement && !lifelineElement) {
             // Clicked on empty space - cancel connection
             this.resetConnectionState();
             return;
         }
 
-        const shapeId = shapeElement.dataset.id;
-        const shape = this.diagram.getShape(shapeId);
+        // Get shape from either shape element or lifeline's parent
+        let shape;
+        if (shapeElement) {
+            const shapeId = shapeElement.dataset.id;
+            shape = this.diagram.getShape(shapeId);
+        } else if (lifelineElement) {
+            // Lifeline clicked - get parent shape
+            const parentGroup = lifelineElement.closest('.shape');
+            if (parentGroup) {
+                const shapeId = parentGroup.dataset.id;
+                shape = this.diagram.getShape(shapeId);
+            }
+        }
 
         if (!shape) return;
+
+        const plugin = this.pluginRegistry.getActive();
+        const isSequenceDiagram = plugin.id === 'sequence';
 
         if (!this.connectionSource) {
             // Start connection
             this.connectionSource = shape;
+            this.connectionSourceY = point.y; // Store Y position for sequence diagrams
             this.state = 'connecting';
 
             // Show connection preview tooltip
@@ -430,19 +552,39 @@ export class InteractionController {
 
         } else if (this.connectionSource.id !== shape.id) {
             // Complete connection
-            const plugin = this.pluginRegistry.getActive();
             const validationResult = plugin.validateConnection(this.connectionSource, shape, this.currentTool);
 
             // Handle both boolean (true) and object ({valid: true}) return types
             const isValid = validationResult === true || (validationResult && validationResult.valid);
 
             if (isValid) {
-                const connection = new Connection({
+                // Get connector types and find the current connector definition
+                const connectorTypes = plugin.getConnectorTypes();
+                const connectorDef = connectorTypes.find(c => c.type === this.currentTool);
+                
+                // For sequence diagrams, use the same Y for horizontal messages
+                // or use specific Y positions for each endpoint
+                const connectionOptions = {
                     type: this.currentTool,
                     sourceId: this.connectionSource.id,
                     targetId: shape.id,
-                    diagramType: plugin.id
-                });
+                    diagramType: plugin.id,
+                    style: {
+                        lineStyle: connectorDef?.lineStyle || 'solid',
+                        sourceArrow: connectorDef?.sourceArrow || 'none',
+                        targetArrow: connectorDef?.targetArrow || 'filled'
+                    }
+                };
+
+                // For sequence diagrams, add Y positions for lifeline connections
+                if (isSequenceDiagram) {
+                    // Use the target click Y position for both (horizontal message)
+                    // This makes messages horizontal as expected in sequence diagrams
+                    connectionOptions.sourceY = point.y;
+                    connectionOptions.targetY = point.y;
+                }
+
+                const connection = new Connection(connectionOptions);
 
                 // Set connection endpoints from source/target shapes
                 connection.sourceShape = this.connectionSource;
@@ -469,14 +611,33 @@ export class InteractionController {
             this.doResize(point);
         }
 
+        // Handle endpoint dragging
+        if (this.draggingEndpoint && this.state === 'dragging-endpoint') {
+            this.doEndpointDrag(point, target);
+        }
+
         if (this.state === 'connecting' && this.connectionSource) {
             // Draw/update connection preview line from source to mouse
             this.updateConnectionPreview(point);
 
-            // Highlight potential target shapes
+            // Remove previous highlighting
+            document.querySelectorAll('.shape--connecting').forEach(el => {
+                el.classList.remove('shape--connecting');
+            });
+            document.querySelectorAll('.connection-point--active').forEach(el => {
+                el.classList.remove('connection-point--active');
+            });
+
+            // Highlight potential target shapes and connection points
             const shapeElement = target.closest('.shape');
             if (shapeElement && shapeElement.dataset.id !== this.connectionSource.id) {
                 shapeElement.classList.add('shape--connecting');
+                
+                // Highlight the nearest connection point
+                const connectionPoint = target.closest('.connection-point');
+                if (connectionPoint) {
+                    connectionPoint.classList.add('connection-point--active');
+                }
             }
         }
     }
@@ -538,6 +699,13 @@ export class InteractionController {
         this.isDragging = true;
         this.state = 'dragging';
         this.dragStartPoint = point.clone ? point.clone() : new Point(point.x, point.y);
+        
+        // Store original positions for undo/redo
+        this.dragStartPositions = this.selectionManager.getSelectedShapes().map(shape => ({
+            shape,
+            x: shape.x,
+            y: shape.y
+        }));
 
         this.canvas.setCursor('move');
     }
@@ -566,14 +734,42 @@ export class InteractionController {
         if (this.isResizing && this.state === 'resizing') {
             this.endResize();
         }
+        if (this.draggingEndpoint && this.state === 'dragging-endpoint') {
+            // Get target element under mouse
+            const point = this.canvas.screenToSVG(e.clientX, e.clientY);
+            const target = document.elementFromPoint(e.clientX, e.clientY);
+            this.endEndpointDrag(point, target);
+        }
     }
 
     endDrag() {
-        // Note: For proper undo, we should record the total delta from start
-        // For now, just end the drag state
+        // Create undo command for the total movement
+        if (this.dragStartPositions && this.dragStartPositions.length > 0) {
+            const shapes = this.dragStartPositions.map(p => p.shape);
+            
+            // Calculate total delta from original position
+            const firstShape = shapes[0];
+            const originalPos = this.dragStartPositions[0];
+            const totalDx = firstShape.x - originalPos.x;
+            const totalDy = firstShape.y - originalPos.y;
+            
+            // Only create command if there was actual movement
+            if (totalDx !== 0 || totalDy !== 0) {
+                const command = new MoveShapesCommand(shapes, totalDx, totalDy);
+                // Don't execute since we already moved visually - just add to history
+                this.commandManager.addToHistory(command);
+                
+                // Emit shape updated event for connections
+                shapes.forEach(shape => {
+                    this.eventBus.emit(Events.SHAPE_UPDATED, { shape, property: 'position' });
+                });
+            }
+        }
+        
         this.isDragging = false;
         this.state = 'idle';
         this.dragStartPoint = null;
+        this.dragStartPositions = null;
 
         if (this.currentTool === 'select') {
             this.canvas.setCursor('select');
@@ -649,6 +845,7 @@ export class InteractionController {
 
     resetConnectionState() {
         this.connectionSource = null;
+        this.connectionSourceY = null;
         this.state = 'idle';
 
         // Remove preview line and tooltip

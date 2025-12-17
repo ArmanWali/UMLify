@@ -14,11 +14,15 @@ export class Connection {
         // Source and target
         this.source = {
             shapeId: options.sourceId || null,
-            anchor: options.sourceAnchor || 'auto'
+            anchor: options.sourceAnchor || 'auto',
+            // For sequence diagrams: specific Y coordinate on lifeline
+            y: options.sourceY || null
         };
         this.target = {
             shapeId: options.targetId || null,
-            anchor: options.targetAnchor || 'auto'
+            anchor: options.targetAnchor || 'auto',
+            // For sequence diagrams: specific Y coordinate on lifeline
+            y: options.targetY || null
         };
 
         // Waypoints for custom routing
@@ -85,6 +89,14 @@ export class Connection {
     getStartPoint() {
         if (!this.sourceShape) return new Point(0, 0);
 
+        // For sequence diagrams: if a specific Y is set, use lifeline connection
+        if (this.source.y !== null && typeof this.sourceShape.getLifelineConnectionPoint === 'function') {
+            return new Point(
+                this.sourceShape.getLifelineConnectionPoint(this.source.y).x,
+                this.source.y
+            );
+        }
+
         if (this.source.anchor === 'auto') {
             // Find nearest point to target
             const targetCenter = this.targetShape
@@ -102,6 +114,14 @@ export class Connection {
      */
     getEndPoint() {
         if (!this.targetShape) return new Point(0, 0);
+
+        // For sequence diagrams: if a specific Y is set, use lifeline connection
+        if (this.target.y !== null && typeof this.targetShape.getLifelineConnectionPoint === 'function') {
+            return new Point(
+                this.targetShape.getLifelineConnectionPoint(this.target.y).x,
+                this.target.y
+            );
+        }
 
         if (this.target.anchor === 'auto') {
             // Find nearest point to source

@@ -422,6 +422,14 @@ export class UseCasePlugin extends DiagramPlugin {
         ];
     }
 
+    getShapeDefinitions() {
+        return {
+            'ucActor': new ShapeDefinition({ type: 'ucActor', name: 'Actor', defaultWidth: 50, defaultHeight: 80 }),
+            'usecase': new ShapeDefinition({ type: 'usecase', name: 'Use Case', defaultWidth: 140, defaultHeight: 60 }),
+            'system': new ShapeDefinition({ type: 'system', name: 'System Boundary', defaultWidth: 300, defaultHeight: 400 })
+        };
+    }
+
     onActivate() { console.log('Use Case Diagram plugin activated'); }
     onDeactivate() { console.log('Use Case Diagram plugin deactivated'); }
 }
