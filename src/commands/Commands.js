@@ -95,13 +95,23 @@ export class ResizeShapeCommand extends Command {
     }
 
     execute() {
-        this.shape.setPosition(this.newBounds.x, this.newBounds.y);
-        this.shape.setSize(this.newBounds.width, this.newBounds.height);
+        // Use setBounds to emit only one event
+        this.shape.setBounds(
+            this.newBounds.x,
+            this.newBounds.y,
+            this.newBounds.width,
+            this.newBounds.height
+        );
     }
 
     undo() {
-        this.shape.setPosition(this.oldBounds.x, this.oldBounds.y);
-        this.shape.setSize(this.oldBounds.width, this.oldBounds.height);
+        // Use setBounds to emit only one event
+        this.shape.setBounds(
+            this.oldBounds.x,
+            this.oldBounds.y,
+            this.oldBounds.width,
+            this.oldBounds.height
+        );
     }
 }
 

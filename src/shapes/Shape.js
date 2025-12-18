@@ -82,6 +82,23 @@ export class Shape {
     }
 
     /**
+     * Set bounds (position and size) in one operation
+     * This avoids multiple events when resizing
+     * @param {number} x - X coordinate
+     * @param {number} y - Y coordinate
+     * @param {number} width - Width
+     * @param {number} height - Height
+     */
+    setBounds(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = Math.max(width, this.minWidth);
+        this.height = Math.max(height, this.minHeight);
+        this.updateElement();
+        this.eventBus.emit(Events.SHAPE_UPDATED, { shape: this, property: 'bounds' });
+    }
+
+    /**
      * Move by delta
      * @param {number} dx - Delta X
      * @param {number} dy - Delta Y

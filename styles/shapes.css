@@ -123,6 +123,7 @@
     stroke: var(--color-accent);
     stroke-width: 1.5px;
     opacity: 0;
+    pointer-events: none;
     cursor: crosshair;
     transition: opacity var(--transition-fast), transform 0.15s ease;
 }
@@ -141,6 +142,8 @@
 .connection-point--active {
     fill: var(--color-accent);
     opacity: 1;
+    transform: scale(1.5);
+    filter: drop-shadow(0 0 3px var(--color-accent));
 }
 
 /* Shape connecting state (potential connection target) */
@@ -170,6 +173,14 @@
     stroke-width: 1px;
     stroke-dasharray: 8 4;
     fill: none;
+    pointer-events: stroke;
+    cursor: crosshair;
+}
+
+/* Lifeline hit area for easier clicking */
+.lifeline:hover {
+    stroke-width: 3px;
+    stroke: var(--color-accent);
 }
 
 /* Activation Bar */
